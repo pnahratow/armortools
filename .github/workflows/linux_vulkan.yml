@@ -27,3 +27,8 @@ jobs:
       run: |
         cd armorpaint
         ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang
+    - uses: actions/upload-artifact@v2
+      with:
+        name: armor-tools-linux-vulkan
+        path: |
+          ./
