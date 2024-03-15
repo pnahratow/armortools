@@ -18,12 +18,18 @@ jobs:
       run: git submodule update --init --recursive
     - name: Clone krafix
       run: git clone --recursive https://github.com/armory3d/glsl_to_spirv armorpaint/glsl_to_spirv
+    - name: Save Existing File List
+      run: find . > pre_compile_file_list.txt
     - name: Compile
       run: |
         cd armorpaint
         ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang
+    - name: Find Newly Created Files
+      run: |
+        find . > post_compile_file_list.txt
+        comm -13 <(sort pre_compile_file_list.txt) <(sort post_compile_file_list.txt) > new_files.txt
+        tar -cvzf new_files.tar.gz -T new_files.txt
     - uses: actions/upload-artifact@v2
       with:
         name: armor-tools-linux-vulkan
-        path: |
-          ./
+        path: new_files.tar.gz
