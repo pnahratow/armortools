@@ -23,7 +23,7 @@ jobs:
     - name: Compile
       run: |
         cd armorpaint
-        ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang --compile
+        ../armorcore/Kinc/make --from ../armorcore -g opengl --compiler clang --compile
         cd ..
     - name: Find Newly Created Files
       run: |
@@ -32,5 +32,5 @@ jobs:
         tar -cvzf new_files.tar.gz -T new_files.txt
     - uses: actions/upload-artifact@v2
       with:
-        name: armor-tools-linux-vulkan-compi
+        name: armor-tools-linux-opengl-compi
         path: new_files.tar.gz
