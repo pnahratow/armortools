@@ -2,11 +2,6 @@ name: Linux (Vulkan)
 
 on:
   push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - main
 
 jobs:
   build:
@@ -14,16 +9,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Apt Update
       run: sudo apt-get update
     - name: Apt Install
-      run: sudo apt-get install libasound2-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libxi-dev libxcursor-dev libudev-dev libgtk-3-dev --yes --quiet
+      run: sudo apt-get install libasound2-dev libxrandr-dev libxinerama-dev libgl1-mesa-dev libxi-dev libxcursor-dev libudev-dev libgtk-3-dev ninja-build --yes --quiet
     - name: Get Submodules
       run: git submodule update --init --recursive
     - name: Clone krafix
       run: git clone --recursive https://github.com/armory3d/glsl_to_spirv armorpaint/glsl_to_spirv
+    - name: Save Existing File List
+      run: find . > pre_compile_file_list.txt
     - name: Compile
       run: |
         cd armorpaint
-        ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang
+        ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang --compile
+        cd ..
+    - name: Find Newly Created Files
+      run: |
+        find . > post_compile_file_list.txt
+        comm -13 <(sort pre_compile_file_list.txt) <(sort post_compile_file_list.txt) > new_files.txt
+        tar -cvzf new_files.tar.gz -T new_files.txt
+    - uses: actions/upload-artifact@v2
+      with:
+        name: armor-tools-linux-vulkan-compi
+        path: new_files.tar.gz
