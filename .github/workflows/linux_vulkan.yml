@@ -24,6 +24,7 @@ jobs:
       run: |
         cd armorpaint
         ../armorcore/Kinc/make --from ../armorcore -g vulkan --compiler clang
+        cd ..
     - name: Find Newly Created Files
       run: |
         find . > post_compile_file_list.txt
